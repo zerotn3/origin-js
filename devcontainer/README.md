@@ -20,7 +20,7 @@ This docker image installs and runs the bridge server (along with postgres, redi
 - pm2 API (has stats for running applications): curl http://127.0.0.1:4000
 
 **\# netstat -nlt**
-Active Internet connections (only servers)
+
 |Proto  | Recv-Q |Send-Q |Local Address     |      Foreign Address      |   State      |
 | ----- | ------ | ----- | ---------------- | ------------------------- | ------------ |
 |tcp    |    0   |   0   | 127.0.0.1:5000   |       0.0.0.0:*           |    LISTEN    |
@@ -32,6 +32,7 @@ Active Internet connections (only servers)
 |tcp    |    0   |   0   | 0.0.0.0:4002     |       0.0.0.0:*           |    LISTEN    |    
 
 **\# pm2 list**
+
 | App name           | id | mode | pid  | status | restart | uptime | cpu | mem        | user | watching |
 | ------------------ | -- | ----- | ---- | ------ | ------- | ------ | ---- | ---------- | ---- | -------- |
 | bridge server      | 3  | fork | 27   | online | 0       | 94m    | 0%  | 64.8 MB    | root | disabled |
@@ -44,9 +45,7 @@ Active Internet connections (only servers)
 | redis              | 0  | fork | 16   | online | 0       | 94m    | 0%  | 3.6 MB     | root | disabled |
 
 
-
 **TODOS:**
-- postgres process management: pm2 doesn't run binaries
 - integrate envkey
 - templating
-- proxy application: the idea is to have a proxy running in the container which can do things like rewrite configs, proxy to a staging environment, upload and download data, etc. a client application could run on localhost, watching a config file for changes (allows the container's applications to be dynamically configured), streaming logs from the container's applications, etc.
+- proxy application: the idea is to have a proxy running in the container which can do things like rewrite configs, proxy to a staging environment, upload and download data, etc. A client application could run on localhost, watching a config file for changes (allows the container's applications to be dynamically configured), streaming logs from the container's applications, etc.

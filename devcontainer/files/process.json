@@ -29,9 +29,8 @@
     "args"       : "-A util.tasks worker -c=1"
   },{
     "name"       : "postgresql",
-    "script"     : "/usr/lib/postgresql/9.5/bin/postgres",
-    "cwd"        : "/opt",
-    "interpreter": "/bin/bash",
-    "args"       : "-D /var/lib/postgresql/9.5/main -c config_file=/etc/postgresql/9.5/main/postgresql.conf",
+    "script"     : "start-pg.sh",
+    "cwd"        : "/opt/pg",
+    "interpreter": "/bin/bash"
   }]
 }

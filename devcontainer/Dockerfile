@@ -83,6 +83,11 @@ WORKDIR /opt
 COPY files/process.json .
 RUN npm install -g pm2
 
+# upload postgres start script
+RUN apt-get install -y sudo
+WORKDIR /opt/pg
+COPY files/scripts/start-pg.sh .
+
 # cleanup
 RUN rm -rf /tmp/*
 
