@@ -41,11 +41,11 @@ This docker image installs and runs the bridge server (along with postgres, redi
 | ganache            | 2  | fork | 26   | online | 0       | 94m    | 0%  | 100.6 MB   | root | disabled |
 | ipfs               | 1  | fork | 20   | online | 0       | 94m    | 0%  | 98.9 MB    | root | disabled |
 | pm2-http-interface | 6  | fork | 83   | online | 0       | 94m    | 0%  | 45.0 MB    | root | disabled |
-| postgresql         | 6  | fork | 0   | errored | 15      | 0      | 0%  | 0 B        | root | disabled |
+| postgresql         | 6  | fork | 50   | online | 0       | 10h    | 0%  | 3.2 MB     | root | disabled | 
 | redis              | 0  | fork | 16   | online | 0       | 94m    | 0%  | 3.6 MB     | root | disabled |
 
 
 **TODOS:**
 - integrate envkey
 - templating
-- proxy application: the idea is to have a proxy running in the container which can do things like rewrite configs, proxy to a staging environment, upload and download data, etc. A client application could run on localhost, watching a config file for changes (allows the container's applications to be dynamically configured), streaming logs from the container's applications, etc.
+- proxy application: one idea is to have a proxy running in the container which can do things like rewrite configs, proxy to a staging environment, upload and download data, etc.
