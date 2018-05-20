@@ -1,0 +1,37 @@
+{
+  "apps" : [{
+    "name"       : "redis",
+    "script"     : "redis-server"
+  },{
+    "name"       : "ipfs",
+    "script"     : "./start-ipfs.js",
+    "cwd"        : "/opt/ipfs"
+  },{
+    "name"       : "ganache",
+    "script"     : "./start-ganache.js",
+    "cwd"        : "/opt/ganache"
+  },{
+    "name"       : "bridge server",
+    "script"     : "main.py",
+    "cwd"        : "/opt/bridge-server",
+    "interpreter": "/usr/bin/python"
+  },{
+    "name"       : "celery beat",
+    "script"     : "celery",
+    "cwd"        : "/opt/bridge-server",
+    "interpreter": "/usr/bin/python",
+    "args"       : "-A util.tasks beat"
+  }, {
+    "name"       : "celery worker",
+    "script"     : "celery",
+    "cwd"        : "/opt/bridge-server",
+    "interpreter": "/usr/bin/python",
+    "args"       : "-A util.tasks worker -c=1"
+  },{
+    "name"       : "postgresql",
+    "script"     : "/usr/lib/postgresql/9.5/bin/postgres",
+    "cwd"        : "/opt",
+    "interpreter": "/bin/bash",
+    "args"       : "-D /var/lib/postgresql/9.5/main -c config_file=/etc/postgresql/9.5/main/postgresql.conf",
+  }]
+}
