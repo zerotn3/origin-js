@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 const Ganache = require('ganache-core')
 
 const PORT = 8545

@@ -12,21 +12,28 @@
     "cwd"        : "/opt/ganache"
   },{
     "name"       : "bridge server",
-    "script"     : "main.py",
+    "script"     : "start-bridge-server.sh",
     "cwd"        : "/opt/bridge-server",
-    "interpreter": "/usr/bin/python"
+    "interpreter": "/bin/bash",
+    "env": {
+      "BRIDGE_SERVER_PATH": "/opt/bridge-server"
+    }
   },{
     "name"       : "celery beat",
-    "script"     : "celery",
+    "script"     : "start-celery-beat.sh",
     "cwd"        : "/opt/bridge-server",
-    "interpreter": "/usr/bin/python",
-    "args"       : "-A util.tasks beat"
+    "interpreter": "/bin/bash",
+    "env": {
+      "BRIDGE_SERVER_PATH": "/opt/bridge-server"
+    }
   }, {
     "name"       : "celery worker",
-    "script"     : "celery",
+    "script"     : "start-celery-worker.sh",
     "cwd"        : "/opt/bridge-server",
-    "interpreter": "/usr/bin/python",
-    "args"       : "-A util.tasks worker -c=1"
+    "interpreter": "/bin/bash",
+    "env": {
+      "BRIDGE_SERVER_PATH": "/opt/bridge-server"
+    }
   },{
     "name"       : "postgresql",
     "script"     : "start-pg.sh",

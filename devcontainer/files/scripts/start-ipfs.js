@@ -1,3 +1,5 @@
+#!/usr/bin/node
+
 var ipfsAPI = require('ipfs-api')
 var HttpIPFS = require('ipfs/src/http')
 
