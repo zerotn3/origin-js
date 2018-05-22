@@ -1,7 +1,8 @@
 {
   "apps" : [{
     "name"       : "redis",
-    "script"     : "redis-server"
+    "script"     : "redis-server",
+    "args"       : "/etc/redis/redis.conf"
   },{
     "name"       : "ipfs",
     "script"     : "./start-ipfs.js",

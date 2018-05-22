@@ -80,6 +80,8 @@ ENV LC_ALL=C.UTF-8 \
 RUN /etc/init.d/postgresql start && \
 	. bridge-server-venv/bin/activate && \
 	DATABASE_URL=postgresql://docker:docker@localhost:5432/bridge-server FLASK_APP=main.py flask db upgrade
+# https://github.com/OriginProtocol/bridge-server/issues/71
+RUN bridge-server-venv/bin/pip3.6 install kombu==4.1
 
 # run everything with pm2 (thanks Gabo!)
 WORKDIR /opt
