@@ -49,3 +49,4 @@ This docker image installs and runs the bridge server (along with postgres, redi
 - integrate envkey
 - templating
 - proxy application: one idea is to have a proxy running in the container which can do things like rewrite configs, proxy to a staging environment, upload and download data, etc.
+- SDK, whole system integration testing
