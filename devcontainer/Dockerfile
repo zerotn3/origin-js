@@ -82,6 +82,8 @@ RUN /etc/init.d/postgresql start && \
 	DATABASE_URL=postgresql://docker:docker@localhost:5432/bridge-server FLASK_APP=main.py flask db upgrade
 # https://github.com/OriginProtocol/bridge-server/issues/71
 RUN bridge-server-venv/bin/pip3.6 install kombu==4.1
+# https://github.com/OriginProtocol/bridge-server/issues/74
+RUN sed -i '24s/.*/    return True\n    """/' /opt/bridge-server/bridge-server-venv/lib/python3.6/site-packages/ipfsapi/client.py
 
 # run everything with pm2 (thanks Gabo!)
 WORKDIR /opt
