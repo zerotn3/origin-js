@@ -11,6 +11,8 @@ This docker image installs and runs the bridge server (along with postgres, redi
 
 4. Access the CLI using `docker exec -it <container ID> /bin/bash` (get the container ID from `docker ps`)
 
+The bridge server envionment variable file is located at /opt/bridge-server/.env (DATABASE_URL=postgresql://docker:docker@localhost/bridge-server)
+
 **Connectivity tests from localhost:**
 - bridge server: curl http://127.0.0.1:5000
 - ipfs: curl 127.0.0.1:5002; curl 127.0.0.1:8080
