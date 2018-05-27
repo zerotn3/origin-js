@@ -14,7 +14,7 @@ WORKDIR /tmp
 RUN curl -sL https://deb.nodesource.com/setup_9.x | bash -
 RUN apt-get install -y nodejs
 
-# Blockchain
+# Blockchain (Ganache)
 # TODO: pull port, mnemonic, etc. from config
 RUN apt-get install -y ethereum
 WORKDIR /opt/ganache
@@ -57,7 +57,7 @@ RUN ln -nvfs /usr/bin/python3.6 /usr/bin/python3 && \
 	ln -nvfs /usr/bin/pip3
 RUN pip3 install pip --upgrade
 
-# Bridge server
+# Bridge server (develop branch)
 # TODO: integrate envkey
 WORKDIR /opt
 RUN pip3 install virtualenv
@@ -85,6 +85,19 @@ RUN bridge-server-venv/bin/pip3.6 install kombu==4.1
 # https://github.com/OriginProtocol/bridge-server/issues/74
 RUN sed -i '24s/.*/    return True\n    """/' /opt/bridge-server/bridge-server-venv/lib/python3.6/site-packages/ipfsapi/client.py
 
+# Elasticsearch 2.4.0
+WORKDIR /tmp
+RUN apt-get install -y openjdk-8-jre
+RUN curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb
+RUN dpkg -i elasticsearch-2.4.0.deb
+COPY files/config/elasticsearch.yml /etc/elasticsearch
+RUN ln -s /etc/elasticsearch /usr/share/elasticsearch/config && \
+	mkdir /usr/share/elasticsearch/logs && \
+	chown elasticsearch:elasticsearch /usr/share/elasticsearch/logs -R && \
+	mkdir /usr/share/elasticsearch/data && \
+	chown elasticsearch:elasticsearch /usr/share/elasticsearch/data -R
+WORKDIR /opt/es
+
 # run everything with pm2 (thanks Gabo!)
 WORKDIR /opt
 RUN npm install -g pm2
@@ -94,15 +107,15 @@ COPY files/scripts/start-bridge-server.sh /opt/bridge-server
 COPY files/scripts/start-celery-beat.sh /opt/bridge-server
 COPY files/scripts/start-celery-worker.sh /opt/bridge-server
 COPY files/scripts/start-pg.sh /opt/pg
+COPY files/scripts/start-es.sh /opt/es
 COPY files/process.json /opt
-
 RUN apt-get install -y sudo
 
 # cleanup
 RUN rm -rf /tmp/*
 
-# Expose ports for pm2 health check endpoint, bridge server, ipfs, postgres, redis, ganache
+# Expose ports for pm2 health check endpoint, bridge server, ipfs, postgres, redis, ganache, elasticsearch
 # TODO: pull these from configs
-EXPOSE 4000 5000 5002 8080 5432 6379 8545
+EXPOSE 4000 5000 5002 8080 5432 6379 8545 9200
 
 CMD pm2-runtime /opt/process.json --web 4000
