@@ -52,6 +52,6 @@ The bridge server envionment variable file is located at /opt/bridge-server/.env
 
 **TODOS:**
 - integrate envkey
-- templating
+- templating / user configurability
 - proxy application: one idea is to have a proxy running in the container which can do things like rewrite configs, proxy to a staging environment, upload and download data, etc.
-- SDK, whole system integration testing
+- SDK, integration testing

@@ -85,11 +85,12 @@ RUN bridge-server-venv/bin/pip3.6 install kombu==4.1
 # https://github.com/OriginProtocol/bridge-server/issues/74
 RUN sed -i '24s/.*/    return True\n    """/' /opt/bridge-server/bridge-server-venv/lib/python3.6/site-packages/ipfsapi/client.py
 
-# Elasticsearch 2.4.0
+# Elasticsearch 5.4.3
+# Bonsai support says that by default, the version that will be run is the highest version in the region. 5.4.3 is the minimum of the maximum of versions across regions
 WORKDIR /tmp
 RUN apt-get install -y openjdk-8-jre
-RUN curl -O https://download.elastic.co/elasticsearch/release/org/elasticsearch/distribution/deb/elasticsearch/2.4.0/elasticsearch-2.4.0.deb
-RUN dpkg -i elasticsearch-2.4.0.deb
+RUN curl -O https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-5.4.3.deb
+RUN dpkg -i elasticsearch-5.4.3.deb
 COPY files/config/elasticsearch.yml /etc/elasticsearch
 RUN ln -s /etc/elasticsearch /usr/share/elasticsearch/config && \
 	mkdir /usr/share/elasticsearch/logs && \
