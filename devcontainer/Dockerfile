@@ -73,7 +73,7 @@ RUN apt-get install -y pkg-config libffi-dev autoconf libtool libssl-dev
 RUN sed -i '/pytest-*/d' requirements.txt 
 RUN bridge-server-venv/bin/pip3.6 install -r requirements.txt
 RUN sed -i 's/app.run()/app.run(host= "0.0.0.0")/' main.py
-COPY files/config/dev.env .env
+COPY files/config/bridge_server_dev.env .env
 # needed by flask 
 ENV LC_ALL=C.UTF-8 \
     LANG=C.UTF-8
