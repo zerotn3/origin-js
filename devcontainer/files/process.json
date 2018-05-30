@@ -20,16 +20,8 @@
       "BRIDGE_SERVER_PATH": "/opt/bridge-server"
     }
   },{
-    "name"       : "celery beat",
-    "script"     : "start-celery-beat.sh",
-    "cwd"        : "/opt/bridge-server",
-    "interpreter": "/bin/bash",
-    "env": {
-      "BRIDGE_SERVER_PATH": "/opt/bridge-server"
-    }
-  }, {
-    "name"       : "celery worker",
-    "script"     : "start-celery-worker.sh",
+    "name"       : "celery",
+    "script"     : "start-celery.sh",
     "cwd"        : "/opt/bridge-server",
     "interpreter": "/bin/bash",
     "env": {
@@ -45,5 +37,10 @@
     "script"     : "start-es.sh",
     "cwd"        : "/opt/es",
     "interpreter": "/bin/bash"
+  },{
+    "name"       : "demo-dapp",
+    "script"     : "npm",
+    "args"       : "start",
+    "cwd"        : "/opt/demo-dapp"
   }]
 }

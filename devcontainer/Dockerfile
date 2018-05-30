@@ -108,8 +108,7 @@ RUN npm install -g pm2
 COPY files/scripts/start-ipfs.js /opt/ipfs
 COPY files/scripts/start-ganache.js /opt/ganache
 COPY files/scripts/start-bridge-server.sh /opt/bridge-server
-COPY files/scripts/start-celery-beat.sh /opt/bridge-server
-COPY files/scripts/start-celery-worker.sh /opt/bridge-server
+COPY files/scripts/start-celery.sh /opt/bridge-server
 COPY files/scripts/start-pg.sh /opt/pg
 COPY files/scripts/start-es.sh /opt/es
 COPY files/process.json /opt
