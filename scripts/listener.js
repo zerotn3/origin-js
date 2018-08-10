@@ -1,4 +1,6 @@
 const process = require('process')
+const http = require('http')
+const urllib = require('url')
 const Origin = require('../dist/index') // Will eventualy be the origin npm package
 const Web3 = require('web3')
 
@@ -16,15 +18,15 @@ const o = new Origin({ web3 })
 // To use:
 // - Run `npm start run` to setup a local IPFS and blockchain, and run tests
 // - In another terminal run `node scripts/listener.js`
+// - Or `node scripts/listener.js --webhook=http://localhost/originevents/`
 //
 // Todo
-// - Reindex from a certain point
-// - POST to Webhooks
-// - Keep Stdout option
+// - Allow configuring web3 endpoint and IPFS endpoint
 // - Handle errors
+// - Persist starting point
 // - Handle blockchain splits/winners
-// - Include as-of dates in POST
-// - Perhaps send related data as it was on the event, not the latest related
+// - Include current-as-of block numbers in POSTs
+// - Perhaps send related data as it was at the time of the event, not crawl time
 
 // -----------------------------
 // Section 1: Follow rules
@@ -96,9 +98,9 @@ const LISTEN_RULES = {
 // liveTracking
 // - checks for a new block every checkIntervalSeconds
 // - if new block appeared, look for all events after the last found event
-async function liveTracking() {
+async function liveTracking(config) {
   console.log('Lobs')
-  const context = await new Context().init()
+  const context = await new Context(config).init()
   console.log('Lookup tables created')
 
   let lastLogBlock = 0
@@ -167,7 +169,7 @@ async function runBatch(opts, context) {
   return lastLogBlock
 }
 
-// Handles running annotating and running rules for a particular log
+// handleLog - annotates, runs rule, and ouputs a particular log
 async function handleLog(log, rule, contractVersion, context) {
   log.decoded = web3.eth.abi.decodeLog(
     rule.eventAbi.inputs,
@@ -184,8 +186,40 @@ async function handleLog(log, rule, contractVersion, context) {
     related: await rule.ruleFn(log)
   }
 
-  process.stdout.write(JSON.stringify(output, null, 2))
-  process.stdout.write('\n----\n')
+  const json = JSON.stringify(output, null, 2)
+
+  if (context.config.webhook) {
+    process.stdout.write('\n-- WEBHOOK to ' + context.config.webhook + ' --\n')
+    await postToWebhook(context.config.webhook, json)
+  } else {
+    process.stdout.write(json)
+    process.stdout.write('\n----\n')
+  }
+}
+
+async function postToWebhook(urlString, json) {
+  url = urllib.parse(urlString)
+  const postOptions = {
+    host: url.host,
+    port: url.port,
+    path: url.path,
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Content-Length': Buffer.byteLength(json)
+    }
+  }
+  return new Promise((resolve, reject) => {
+    const req = http.request(postOptions, res => {
+      console.log(res.statusCode)
+      resolve()
+    })
+    req.on('error', err => {
+      reject()
+    })
+    req.write(json)
+    req.end()
+  })
 }
 
 // -------------------------------------------------------------------
@@ -193,7 +227,8 @@ async function handleLog(log, rule, contractVersion, context) {
 // -------------------------------------------------------------------
 
 class Context {
-  constructor() {
+  constructor(config) {
+    this.config = config
     this.signatureToRules = undefined
     this.addressToVersion = undefined
     this.networkId = undefined
@@ -252,4 +287,13 @@ async function buildVersionList() {
 // Section 4: Run the listener
 // ---------------------------
 
-liveTracking()
+const args = {}
+process.argv.forEach(arg => {
+  const t = arg.split('=')
+  args[t[0]] = t[1]
+})
+
+const config = {
+  webhook: args['--webhook']
+}
+liveTracking(config)
