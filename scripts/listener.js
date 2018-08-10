@@ -8,15 +8,16 @@ const o = new Origin({ web3 })
 
 // Origin Listener
 // ---------------
-// An at-least-once event listener for origin events.
+// An at-least-once event listener for origin events (May deliver an event more than once).
+// Make sure your webhook endpoint is idempotent!
 // Sends events along with all the related data.
+// Designed to be infura compatible - API calls only, no subscriptions.
 //
 // To use:
 // - Run `npm start run` to setup a local IPFS and blockchain, and run tests
 // - In another terminal run `node scripts/listener.js`
 // 
 // Todo
-// - Include event data **Next**
 // - Live event tracking
 // - Reindex from a certain point
 // - POST to Webhooks
@@ -130,11 +131,16 @@ async function handleLog(log, rule, contractVersion, context) {
     log.topics.slice(1)
   )
   log.contractName = contractVersion.contractName
+  log.eventName = rule.eventName
   log.contractVersionKey = contractVersion.versionKey
   log.networkId = context.networkId
-  const customData = await rule.ruleFn(log)
 
-  process.stdout.write(JSON.stringify(customData, null, 2))
+  const output = {
+    log: log,
+    related: await rule.ruleFn(log)
+  }
+
+  process.stdout.write(JSON.stringify(output, null, 2))
   process.stdout.write('\n----\n')
 }
 
