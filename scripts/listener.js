@@ -16,9 +16,8 @@ const o = new Origin({ web3 })
 // To use:
 // - Run `npm start run` to setup a local IPFS and blockchain, and run tests
 // - In another terminal run `node scripts/listener.js`
-// 
+//
 // Todo
-// - Live event tracking
 // - Reindex from a certain point
 // - POST to Webhooks
 // - Keep Stdout option
@@ -94,11 +93,52 @@ const LISTEN_RULES = {
 // Section 2: The following engine
 // -------------------------------
 
-// runBatch - gets and processes logs for a range of blocks
-async function runBatch(opts) {
+// liveTracking
+// - checks for a new block every checkIntervalSeconds
+// - if new block appeared, look for all events after the last found event
+async function liveTracking() {
+  console.log('Lobs')
   const context = await new Context().init()
+  console.log('Lookup tables created')
+
+  let lastLogBlock = 0
+  let lastCheckedBlock = 0
+  const checkIntervalSeconds = 5
+  let start
+
+  check = async () => {
+    start = new Date()
+    const currentBlockNumber = await web3.eth.getBlockNumber()
+    if (currentBlockNumber == lastCheckedBlock) {
+      return scheduleNextCheck()
+    }
+    console.log('New block: ' + currentBlockNumber)
+    const opts = { fromBlock: lastLogBlock + 1 }
+    const batchLastLogBlock = await runBatch(opts, context)
+    if (batchLastLogBlock != undefined) {
+      lastLogBlock = batchLastLogBlock
+    }
+    lastCheckedBlock = currentBlockNumber
+    return scheduleNextCheck()
+  }
+  scheduleNextCheck = async () => {
+    const elapsed = new Date() - start
+    delay = Math.max(checkIntervalSeconds * 1000 - elapsed, 1)
+    setTimeout(check, delay)
+  }
+
+  check()
+}
+
+// runBatch - gets and processes logs for a range of blocks
+async function runBatch(opts, context) {
   const fromBlock = opts.fromBlock
   const toBlock = opts.toBlock
+  let lastLogBlock = undefined
+
+  console.log(
+    'Looking for logs from block ' + fromBlock + ' to ' + (toBlock || 'Latest')
+  )
 
   const eventTopics = Object.keys(context.signatureToRules)
   const logs = await web3.eth.getPastLogs({
@@ -117,10 +157,14 @@ async function runBatch(opts) {
     if (rule == undefined) {
       continue // Skip - No handler defined
     }
+    lastLogBlock = log.blockNumber
     // Process it
     await handleLog(log, rule, contractVersion, context)
   }
-  console.log('' + logs.length + ' logs in batch')
+  if (logs.length > 0) {
+    console.log('' + logs.length + ' logs found')
+  }
+  return lastLogBlock
 }
 
 // Handles running annotating and running rules for a particular log
@@ -208,4 +252,4 @@ async function buildVersionList() {
 // Section 4: Run the listener
 // ---------------------------
 
-runBatch({ fromBlock: 1 })
+liveTracking()
