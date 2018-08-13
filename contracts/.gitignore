@@ -1,6 +1,7 @@
 # Truffle build artifacts
 # https://ethereum.stackexchange.com/questions/19486/storing-a-truffle-contract-interface-in-version-control
-/build
+# For testing
+# /build
 
 .idea/
 /.idea
