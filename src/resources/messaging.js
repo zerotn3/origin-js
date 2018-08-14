@@ -220,7 +220,7 @@ class Messaging extends ResourceBase {
           const remote_address = message.payload.key
           this.startConvoRoom(remote_address)
           // this is probably not needed
-          // this.getConvo(remote_address)
+          this.getConvo(remote_address)
         }
       }
     )
