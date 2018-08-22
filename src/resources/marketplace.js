@@ -65,6 +65,36 @@ class Marketplace extends Adaptable {
     })
   }
 
+  async search(searchQuery) { 
+    const query = `
+    {
+      Listings (
+        searchQuery: "${searchQuery}"
+      ) {
+        totalCount
+        more
+        listings {
+          id
+
+        }
+      }
+    }`
+    const url = `${this.defaultApolloServer}:${this.defaultApolloServerPort}`
+    const response = await this.fetch(url, {
+        method: 'POST',
+        body: JSON.stringify({
+          query:query
+        }),
+        headers: {
+          "Content-Type": "application/json"
+        },
+      }
+    )
+
+    console.log(response.json())
+
+  }
+
   // async getOffersCount(listingId) {}
 
   async getOffers(listingId, opts = {}) {
